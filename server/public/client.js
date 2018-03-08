@@ -1,6 +1,6 @@
 
 // console.log(d3);
-// var data = [1, 23, 22, 4, 63, 12];
+
 var dogs = [];
 var pulp = [];
 var kb1 = [];
@@ -9,8 +9,9 @@ var ib = [];
 var django = [];
 var jackie = [];
 
-var graphCount = 0;
+var all = ['Reservoir Dogs', 'Pulp Fiction', "Kill Bill: Vol. 1", "Kill Bill: Vol. 2", "Inglorious Basterds", "Django Unchained", "Jackie Brown"];
 
+var graphCount = 0;
 
 $(document).ready(function() {
   // Remember, you need a server to use this:
@@ -33,7 +34,6 @@ $(document).ready(function() {
       break;
     }
   }).then(function() {
-
     var dogsSwears = sanitizeMovie(dogs);
     graphMovie(dogsSwears);
 
@@ -50,58 +50,44 @@ $(document).ready(function() {
     graphMovie(djangoSwears);
     var jackieSwears = sanitizeMovie(jackie);
     graphMovie(jackieSwears);
-    // graphMovie(pulp);
-    // graphMovie(dogs);
-
   });
-
-
-
 });
-
 
 
 // The goal here will be to collapse the data into minute-sized chunks, and radius of circle at that minute will depict number of swears:
 function sanitizeMovie(movie) {
   var eventObject = {};
+  var deathObject = {};
   var eventArray = [];
   var length = parseFloat(movie[movie.length - 1].minutes_in);
 
   // Initialize object's keys:
   for (var i=0; i < length; i++) {
     eventObject[i] = 0;
+    deathObject[i] = 0;
   }
 
   movie.forEach(function(ev) {
     var min = Math.floor(parseFloat(ev.minutes_in));
     if (ev.type == 'word') {
       eventObject[min] ++;
+    } else {
+      deathObject[min] ++;
     }
   });
-  // console.log(eventObject);
 
-
+  // d3's data function needs an array, not an object:
   for (var j=0; j < length; j++) {
-    eventArray.push(eventObject[j]);
+    eventArray.push({num: eventObject[j], deaths: deathObject[j]});
   }
-  // console.log(eventArray);
 
-  // wait, this is all we need:
   return eventArray;
-
-  // Ugh fine i'll just add it to every event....ugly:
-  // movie.forEach(function(ev) {
-  //   ev.eventObject = eventObject;
-  // });
-  // console.log(Object.keys(eventObject));
 }
 
 // ok the issue is likely that we're selecting *all* circles, so it only works the first time...
 function graphMovie(movie) {
   console.log(movie);
-  // var length = parseFloat(movie[movie.length - 1].minutes_in);
   var length = movie.length;
-  // console.log(length);
   var x = d3.scaleLinear()
       .domain([0, length])
       .range([10, 710]);
@@ -110,13 +96,10 @@ function graphMovie(movie) {
     .selectAll("circle")
     .data(movie);
 
-  console.log(circles);
+  // console.log(circles);
   var circle = circles.enter().append("circle");
-    // .update().append("circle");
-
 
   circle.attr("cx", function(d, i) {
-    // console.log(d);
     return x(i);
   })
     .style("fill", function(d) {
@@ -127,59 +110,34 @@ function graphMovie(movie) {
       // }
       return "steelblue";
     })
-    .attr("r", function(d, i) {
-      return d;
+    .attr("r", function(d) {
+      return d.num;
     })
     .attr("cy", 50);
 
+    var squares = d3.select(".tarantino" + graphCount)
+      .selectAll("rect")
+      .data(movie)
+      .enter().append("rect");
+
+    squares.attr("x", function(d, i) {
+      // don't actually need the /2 if we double the size!
+      return x(i) - d.deaths ;
+    })
+      .style("fill", "tomato")
+      .attr("y", function(d) {
+        return 50 - d.deaths ;
+      })
+      .attr("height", function(d) {
+        return d.deaths * 2;
+      })
+      .attr("width", function(d) {
+        return d.deaths * 2;
+      });
+
     graphCount ++;
-    $('body').append('<svg width="720" height="120" class="tarantino' + graphCount + '"></svg>');
+    $('body').append('<h4>' + all[graphCount] + ':</h4><svg width="720" height="120" class="tarantino' + graphCount + '"></svg>');
 }
 
-
-
-
-
-
-// all right, and this has been updated from .scale():
-// var x = d3.scaleLinear()
-//     .domain([0, d3.max(data)])
-//     .range([0, 520]);
-//
-// // var svg = document.getElementsByTagName('svg')[0];
-// // just needed the background color, ok:
-// d3.select(".chart")
-// // initiate Join by defining selection to be joined to data:
-//   .selectAll("div")
-//   // join the data:
-//     .data(data)
-//     // say what to do for data without a selection (which is all of it, since selection is empty:)
-//   .enter().append("div")
-//     .style("width", function(d) { return x(d) + "px"; })
-//     .style("background-color", "blue")
-//     .style("text-align", "right")
-//     .text(function(d) { return d; });
-//
-// var circle = d3.selectAll("circle");
-// d3.selectAll("circle")
-//   .style("fill", "steelblue")
-//   .attr("r", 30)
-//   .attr("cx", function() {  return Math.random() * 720;  });
-//
-//
-// circle.data([32, 57, 112]);
-// circle.attr("r", function(d) { return Math.sqrt(d); });
-// circle.attr("cx", function(d, i) { return i * 100 + 30; });
-//
-// var svg = d3.select("svg");
-
-// svg.selectAll("circle")
-// // Strange, changing the value of first three elements does nothing here..
-//     .data([320, 57, 112, 293])
-//   .enter().append("circle")
-//     .attr("cy", 60)
-//     .attr("cx", function(d, i) { return i * 100 + 30; })
-//     .attr("r", function(d) { return Math.sqrt(d); });
-//
 
 // *** Using update rather than regenerating objects that are sticking around (e.g. being shifted from 1 to 5 when changing age bracket) improves performance. Use key functions for this kind of object constancy.
