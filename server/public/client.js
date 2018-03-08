@@ -151,11 +151,17 @@ function graphMovie(movie) {
     var interval = length / numTicks;
     for (var i=0; i < numTicks; i++) {
       var time = Math.floor(i * interval);
+      var hours = Math.floor(time / 60);
+      var minutes = time % 60;
+      if (String(minutes).length == 1) {
+        minutes = '0' + String(minutes);
+      }
+      var cleanTime = hours + ':' + minutes;
       svg.append("text")
         .attr("x", i * 720 / numTicks)
-        .attr("y", 10)
+        .attr("y", 11)
         // .attr("dy", ".35em")
-        .text(function(d) { return time; });
+        .text(function(d) { return cleanTime; });
     }
 
 
