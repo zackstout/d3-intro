@@ -9,35 +9,57 @@ var ib = [];
 var django = [];
 var jackie = [];
 
-// Remember, you need a server to use this:
-d3.csv('tarantino.csv', function(res) {
-  // console.log(res);
-  switch(res.movie) {
-    case "Reservoir Dogs": dogs.push(res);
-    break;
-    case "Pulp Fiction": pulp.push(res);
-    break;
-    case "Kill Bill: Vol. 1": kb1.push(res);
-    break;
-    case "Kill Bill: Vol. 2": kb2.push(res);
-    break;
-    case "Inglorious Basterds": ib.push(res);
-    break;
-    case "Django Unchained": django.push(res);
-    break;
-    case "Jackie Brown": jackie.push(res);
-    break;
-  }
-}).then(function() {
+var graphCount = 0;
 
-  var dogsSwears = sanitizeMovie(dogs);
-  graphMovie(dogsSwears);
-  // graphMovie(pulp);
-  // graphMovie(dogs);
+
+$(document).ready(function() {
+  // Remember, you need a server to use this:
+  d3.csv('tarantino.csv', function(res) {
+    // console.log(res);
+    switch(res.movie) {
+      case "Reservoir Dogs": dogs.push(res);
+      break;
+      case "Pulp Fiction": pulp.push(res);
+      break;
+      case "Kill Bill: Vol. 1": kb1.push(res);
+      break;
+      case "Kill Bill: Vol. 2": kb2.push(res);
+      break;
+      case "Inglorious Basterds": ib.push(res);
+      break;
+      case "Django Unchained": django.push(res);
+      break;
+      case "Jackie Brown": jackie.push(res);
+      break;
+    }
+  }).then(function() {
+
+    var dogsSwears = sanitizeMovie(dogs);
+    graphMovie(dogsSwears);
+
+    var pulpSwears = sanitizeMovie(pulp);
+    graphMovie(pulpSwears);
+
+    var kb1Swears = sanitizeMovie(kb1);
+    graphMovie(kb1Swears);
+    var kb2Swears = sanitizeMovie(kb2);
+    graphMovie(kb2Swears);
+    var ibSwears = sanitizeMovie(ib);
+    graphMovie(ibSwears);
+    var djangoSwears = sanitizeMovie(django);
+    graphMovie(djangoSwears);
+    var jackieSwears = sanitizeMovie(jackie);
+    graphMovie(jackieSwears);
+    // graphMovie(pulp);
+    // graphMovie(dogs);
+
+  });
+
+
 
 });
 
-var graphCount = 0;
+
 
 // The goal here will be to collapse the data into minute-sized chunks, and radius of circle at that minute will depict number of swears:
 function sanitizeMovie(movie) {
@@ -84,12 +106,16 @@ function graphMovie(movie) {
       .domain([0, length])
       .range([10, 710]);
 
-  var circles = d3.select(".tarantino")
+  var circles = d3.select(".tarantino" + graphCount)
     .selectAll("circle")
-    .data(movie)
-    .enter().append("circle");
+    .data(movie);
 
-  circles.attr("cx", function(d, i) {
+  console.log(circles);
+  var circle = circles.enter().append("circle");
+    // .update().append("circle");
+
+
+  circle.attr("cx", function(d, i) {
     // console.log(d);
     return x(i);
   })
@@ -104,12 +130,11 @@ function graphMovie(movie) {
     .attr("r", function(d, i) {
       return d;
     })
-    .attr("cy", 50 + 100 * graphCount);
+    .attr("cy", 50);
 
     graphCount ++;
+    $('body').append('<svg width="720" height="120" class="tarantino' + graphCount + '"></svg>');
 }
-
-
 
 
 
