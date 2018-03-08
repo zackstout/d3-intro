@@ -18,20 +18,36 @@ var all = ['Reservoir Dogs', 'Pulp Fiction', "Kill Bill: Vol. 1", "Kill Bill: Vo
 var graphCount = 0;
 
 var allBech = [];
+var allAges = [];
 
 $(document).ready(function() {
   // Remember, you need a server to use this:
 
   // All right this one should be fun too:
-  d3.csv('csvs/unisex_names_table.csv', function(res) {
-    console.log(res);
-  });
-
-
-  // This one too:
-  // d3.csv('csvs/drug-use-by-age.csv', function(res) {
+  // d3.csv('csvs/unisex_names_table.csv', function(res) {
   //   console.log(res);
   // });
+
+
+  // This one too. We should try to mimic that States/age ranges thing, where the animation makes them move to their new position/rank:
+  d3.csv('csvs/drug-use-by-age.csv', function(res) {
+    // console.log(res);
+    allAges.push(res);
+  }).then(function() {
+    console.log(allAges);
+
+    d3.select(".chart")
+    .selectAll("div")
+    .data(allAges)
+    .enter().append("div")
+    // also cocaine, crack, heroin, hallucinogen, oxycontin, pain-reliever, tranquilizer
+    .style("width", function(d) { return parseFloat(d['oxycontin-frequency']) * 6 + "px"; })
+    .style("background-color", "steelblue")
+    .text(function(d) { return d.age; })
+    // Hmm...can't do both?
+    // .style("text-align", "right")
+    // .text(function(d) { return d['alcohol-frequency']; });
+  });
 
   // This will be fun too:
   // d3.csv('csvs/transfers.csv', function(res) {
