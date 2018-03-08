@@ -84,14 +84,16 @@ function sanitizeMovie(movie) {
   return eventArray;
 }
 
+
 // ok the issue is likely that we're selecting *all* circles, so it only works the first time...
 function graphMovie(movie) {
-  console.log(movie);
+  // console.log(movie);
   var length = movie.length;
   var x = d3.scaleLinear()
       .domain([0, length])
       .range([10, 710]);
 
+  // Swear circles:
   var circles = d3.select(".tarantino" + graphCount)
     .selectAll("circle")
     .data(movie);
@@ -115,6 +117,7 @@ function graphMovie(movie) {
     })
     .attr("cy", 50);
 
+    // Death squares:
     var squares = d3.select(".tarantino" + graphCount)
       .selectAll("rect")
       .data(movie)
@@ -135,8 +138,31 @@ function graphMovie(movie) {
         return d.deaths * 2;
       });
 
+
+    // var xAxis = d3.axisBottom();
+    // xAxis.scale(1);
+    // circles.call(xAxis);
+    var svg = d3.select("body").append("svg").attr("width", 720).attr("height", 20);
+    // svg.call(xAxis);
+    console.log(length);
+
+    // we could do always ~15 minutes, or varies by movie length:
+    var numTicks = 15;
+    var interval = length / numTicks;
+    for (var i=0; i < numTicks; i++) {
+      var time = Math.floor(i * interval);
+      svg.append("text")
+        .attr("x", i * 720 / numTicks)
+        .attr("y", 10)
+        // .attr("dy", ".35em")
+        .text(function(d) { return time; });
+    }
+
+
+    // $('.tarantino' + graphCount).append('<text x="10" y="10" font-size="20px">ello</text>');
+
     graphCount ++;
-    $('body').append('<h4>' + all[graphCount] + ':</h4><svg width="720" height="120" class="tarantino' + graphCount + '"></svg>');
+    $('body').append('<hr><h4>' + all[graphCount] + ':</h4><svg width="720" height="120" class="tarantino' + graphCount + '"></svg>');
 }
 
 
