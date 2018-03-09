@@ -6,7 +6,7 @@ var years = [];
 
 $(document).ready(function() {
   // BECHDEL:
-  d3.csv('csvs/movies.csv', function(res) {
+  d3.csv('../csvs/movies.csv', function(res) {
     // console.log(res);
     allBech.push(res);
     years.push(parseInt(res.year));

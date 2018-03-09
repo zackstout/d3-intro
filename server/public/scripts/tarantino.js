@@ -14,7 +14,7 @@ var jackie = [];
 $(document).ready(() => {
 
     // TARANTINO:
-    d3.csv('csvs/tarantino.csv', function(res) {
+    d3.csv('../csvs/tarantino.csv', function(res) {
       // console.log(res);
       switch(res.movie) {
         case "Reservoir Dogs": dogs.push(res);

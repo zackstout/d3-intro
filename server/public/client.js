@@ -7,9 +7,9 @@ $(document).ready(function() {
   // Remember, you need a server to use this:
 
   // All right this one should be fun too:
-  // d3.csv('csvs/unisex_names_table.csv', function(res) {
-  //   console.log(res);
-  // });
+  d3.csv('csvs/aging_curve.csv', function(res) {
+    console.log(res);
+  });
 
 });
 
